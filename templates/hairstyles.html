@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hairstyles Catalog – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Catalog Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #e0aaff; color: #230843;">Hairstyle Catalog</span>
+            <h2 class="display-6 fw-bold mt-2">Explore All Hairstyles</h2>
+            <p class="text-muted mb-0">Browse hairstyles across all hair lengths, textures, face shapes, and gender collections.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <span class="badge bg-purple-soft text-purple fs-6 px-3 py-2 rounded-pill">
+                Showing {{ total_count }} Available Styles
+            </span>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <form method="get" action="{% url 'hairstyles' %}">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Search Styles</label>
+                    {{ form.search }}
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-semibold text-muted">Face Shape</label>
+                    {{ form.face_shape }}
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <label class="form-label small fw-semibold text-muted">Hair Length</label>
+                    {{ form.hair_length }}
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <label class="form-label small fw-semibold text-muted">Hair Texture</label>
+                    {{ form.hair_type }}
+                </div>
+                <div class="col-lg-3 col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary-purple rounded-pill w-100 py-2">
+                        <i class="fas fa-filter me-1"></i> Apply Filters
+                    </button>
+                    <a href="{% url 'hairstyles' %}" class="btn btn-outline-secondary rounded-pill py-2 px-3" title="Clear Filters">
+                        <i class="fas fa-rotate-left"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Face Shape Filter Pill if applied -->
+    {% if active_shape %}
+        <div class="mb-4 d-flex align-items-center gap-2">
+            <span class="small text-muted">Active Filter:</span>
+            <span class="badge bg-purple-soft text-purple px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2">
+                <span>{{ active_shape }} Face Shape</span>
+                <a href="{% url 'hairstyles' %}" class="text-purple text-decoration-none"><i class="fas fa-times-circle"></i></a>
+            </span>
+        </div>
+    {% endif %}
+
+    <!-- Hairstyle Grid -->
+    <div class="row g-4">
+        {% for style in hairstyles %}
+            <div class="col-lg-4 col-md-6">
+                {% include 'includes/hairstyle_card.html' with style=style fav_ids=fav_ids %}
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                <i class="fas fa-scissors fa-3x text-secondary opacity-50 mb-3"></i>
+                <h5 class="fw-bold">No Hairstyles Match Your Filter Criteria</h5>
+                <p class="text-muted small mb-3">Try clearing some filter options or search for a different keyword.</p>
+                <a href="{% url 'hairstyles' %}" class="btn btn-primary-purple btn-sm rounded-pill px-4">
+                    Clear All Filters
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

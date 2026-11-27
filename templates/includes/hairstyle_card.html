@@ -1,0 +1,40 @@
+{% load static %}
+<div class="hairstyle-card">
+    <div class="hairstyle-img-wrapper">
+        {% if style.image %}
+            <img src="{{ style.image.url }}" alt="{{ style.name }}" class="hairstyle-img">
+        {% else %}
+            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                <i class="fas fa-scissors fa-3x opacity-50"></i>
+            </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <button class="fav-btn-badge btn-fav-toggle {% if style.id in fav_ids %}active{% endif %}" data-hairstyle-id="{{ style.id }}" title="Save to Favourites">
+                <i class="{% if style.id in fav_ids %}fas fa-heart text-danger{% else %}far fa-heart{% endif %}"></i>
+            </button>
+        {% endif %}
+    </div>
+    
+    <div class="p-3 d-flex flex-column flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-light text-dark border">{{ style.get_gender_display }}</span>
+            <span class="badge bg-purple-soft text-purple">{{ style.hair_length }} &bull; {{ style.hair_type }}</span>
+        </div>
+        <h5 class="fw-bold mb-1">{{ style.name }}</h5>
+        <p class="text-muted small mb-3 flex-grow-1">{{ style.description|truncatewords:14 }}</p>
+        
+        <div class="mb-3">
+            <span class="small fw-semibold text-muted d-block mb-1">Compatible Face Shapes:</span>
+            <div>
+                {% for f_shape in style.get_compatible_face_shapes %}
+                    <span class="shape-badge">{{ f_shape }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <a href="{% url 'hairstyle_detail' style.id %}" class="btn btn-sm btn-outline-purple rounded-pill w-100 mt-auto">
+            View Details & Styling Tips <i class="fas fa-angle-right ms-1"></i>
+        </a>
+    </div>
+</div>

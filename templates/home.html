@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FaceStyle AI – Discover Hairstyles That Match Your Face Shape{% endblock %}
+
+{% block content %}
+<!-- ==========================================
+     HERO SECTION
+     ========================================== -->
+<section class="hero-section">
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-badge">
+                    <i class="fas fa-sparkles text-warning"></i> AI-Powered Facial Landmark Precision
+                </div>
+                <h1 class="hero-title">
+                    Discover Hairstyles That <span class="gradient-text">Match Your Face Shape</span>
+                </h1>
+                <p class="hero-subtitle">
+                    FaceStyle AI uses real-time 468-point facial landmark analysis and geometric anthropometry to accurately determine your face shape and curate flattering hairstyles designed specifically for you.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'analyze' %}" class="btn btn-primary-purple btn-lg d-flex align-items-center gap-2">
+                        <i class="fas fa-camera-viewfinder fs-5"></i>
+                        <span>Upload Your Photo</span>
+                    </a>
+                    <a href="{% url 'hairstyles' %}" class="btn btn-outline-purple btn-lg d-flex align-items-center gap-2">
+                        <i class="fas fa-compass"></i>
+                        <span>Explore Hairstyles</span>
+                    </a>
+                </div>
+                
+                <div class="mt-4 pt-3 d-flex align-items-center gap-4 text-white-50 small">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-check-circle text-success"></i> 100% Geometry-Based AI
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-lock text-info"></i> Zero Permanent Storage
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-venus-mars text-warning"></i> Unisex & Neutral
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <!-- Floating Tech Pills -->
+                    <div class="floating-pill floating-pill-1">
+                        <div class="bg-success text-white rounded-circle p-1 d-flex align-items-center justify-content-center" style="width:24px; height:24px;">
+                            <i class="fas fa-check" style="font-size: 11px;"></i>
+                        </div>
+                        <span>468 Mesh Landmarks Detected</span>
+                    </div>
+                    
+                    <div class="floating-pill floating-pill-2">
+                        <i class="fas fa-award text-warning fs-5"></i>
+                        <span>Optimal Aesthetic Ratio: 1.41</span>
+                    </div>
+
+                    <div class="hero-mesh-card text-center">
+                        <div class="rounded-4 overflow-hidden position-relative" style="background: radial-gradient(circle, #3b1466 0%, #120324 100%); min-height: 380px; display: flex; align-items: center; justify-content: center;">
+                            <div class="p-4">
+                                <div class="mb-3 text-accent-lavender">
+                                    <i class="fas fa-face-viewfinder fa-6x" style="color: var(--accent-light-lavender); filter: drop-shadow(0 0 20px rgba(199, 125, 255, 0.6));"></i>
+                                </div>
+                                <h4 class="text-white fw-bold">Live Facial Proportion Engine</h4>
+                                <p class="text-white-50 small mb-4">
+                                    Measures forehead, cheekbones, jawline angles, and vertical elongation directly from camera or image.
+                                </p>
+                                <a href="{% url 'analyze' %}" class="btn btn-sm btn-outline-light rounded-pill px-4">
+                                    <i class="fas fa-play me-1"></i> Try AI Detection Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     HOW IT WORKS SECTION
+     ========================================== -->
+<section class="py-5" style="background-color: #ffffff;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge bg-purple-soft text-primary-purple px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #f0e6fa; color: #5a189a;">Simple 3-Step Process</span>
+            <h2 class="display-6 fw-bold mt-2">How FaceStyle AI Works</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                Our intelligent pipeline translates raw facial coordinates into flattering, professional styling suggestions in seconds.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon-wrapper mx-auto">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">1. Upload or Capture</h5>
+                    <p class="text-muted small">
+                        Take a live photo using your webcam or upload a clear front-facing portrait from your phone or laptop.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon-wrapper mx-auto" style="background: linear-gradient(135deg, rgba(255, 117, 151, 0.15), rgba(199, 125, 255, 0.2)); color: #ff7597;">
+                        <i class="fas fa-microchip-ai"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">2. AI Landmark Analysis</h5>
+                    <p class="text-muted small">
+                        MediaPipe detects 468 landmarks. Our algorithm calculates Euclidean distances across forehead, cheekbones, and jaw.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon-wrapper mx-auto" style="background: linear-gradient(135deg, rgba(157, 78, 221, 0.15), rgba(123, 44, 191, 0.2)); color: #9d4edd;">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">3. Personalized Recommendations</h5>
+                    <p class="text-muted small">
+                        Receive objective hairstyle recommendations tailored to your face shape, with filters for length, texture, and styling tips.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     FACE SHAPE CATEGORIES SECTION
+     ========================================== -->
+<section class="py-5" style="background-color: #f7f4fc;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #e0aaff; color: #230843;">Anthropometrical Classification</span>
+            <h2 class="display-6 fw-bold mt-2">6 Core Face Shape Categories</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                Learn about the geometric archetypes recognized by professional hair stylists and cosmetologists worldwide.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            {% for shape in face_shapes %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="shape-card h-100">
+                        <div class="shape-icon">
+                            <i class="fas {{ shape.icon }}"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1">{{ shape.title }}</h5>
+                        <p class="text-muted small mb-3">{{ shape.desc }}</p>
+                        <a href="{% url 'hairstyles' %}?face_shape={{ shape.name }}" class="btn btn-sm btn-outline-purple rounded-pill px-3">
+                            View {{ shape.name }} Styles <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     POPULAR HAIRSTYLES SECTION
+     ========================================== -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #ffd6e0; color: #ff3366;">Trending In 2026</span>
+                <h2 class="display-6 fw-bold mt-2">Popular Hairstyles</h2>
+                <p class="text-muted">A glimpse of curated styles across modern, classic, and versatile silhouettes.</p>
+            </div>
+            <a href="{% url 'hairstyles' %}" class="btn btn-outline-purple rounded-pill px-4">
+                View All Hairstyles <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        
+        <div class="row g-4">
+            {% for style in featured_hairstyles %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="hairstyle-card">
+                        <div class="hairstyle-img-wrapper">
+                            {% if style.image %}
+                                <img src="{{ style.image.url }}" alt="{{ style.name }}" class="hairstyle-img">
+                            {% else %}
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                    <i class="fas fa-scissors fa-3x text-secondary opacity-50"></i>
+                                </div>
+                            {% endif %}
+                            
+                            {% if user.is_authenticated %}
+                                <button class="fav-btn-badge btn-fav-toggle" data-hairstyle-id="{{ style.id }}" title="Save to Favourites">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-light text-dark border">{{ style.get_gender_display }}</span>
+                                <span class="badge bg-purple-soft text-purple">{{ style.hair_length }} &bull; {{ style.hair_type }}</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ style.name }}</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">{{ style.description|truncatewords:15 }}</p>
+                            
+                            <div class="mb-3">
+                                <span class="small fw-semibold text-muted d-block mb-1">Ideal for:</span>
+                                <div>
+                                    {% for f_shape in style.get_compatible_face_shapes %}
+                                        <span class="shape-badge">{{ f_shape }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <a href="{% url 'hairstyle_detail' style.id %}" class="btn btn-sm btn-outline-purple rounded-pill w-100 mt-auto">
+                                View Styling Tips <i class="fas fa-angle-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Sample hairstyles are being loaded. Check back shortly!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     WHY CHOOSE FACESTYLE AI
+     ========================================== -->
+<section class="py-5" style="background: linear-gradient(180deg, #f7f4fc 0%, #ffffff 100%);">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #e0aaff; color: #230843;">Core Advantages</span>
+            <h2 class="display-6 fw-bold mt-2">Why FaceStyle AI?</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">
+                Built on ethical AI principles and verifiable mathematical measurement, not arbitrary heuristics.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm border border-light h-100 text-center">
+                    <div class="text-primary mb-3"><i class="fas fa-ruler-combined fa-2x" style="color: #9d4edd;"></i></div>
+                    <h6 class="fw-bold">True Geometry</h6>
+                    <p class="small text-muted mb-0">Calculates Euclidean proportion ratios, avoiding random classification.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm border border-light h-100 text-center">
+                    <div class="text-primary mb-3"><i class="fas fa-user-shield fa-2x" style="color: #ff7597;"></i></div>
+                    <h6 class="fw-bold">Privacy Safeguarded</h6>
+                    <p class="small text-muted mb-0">Photos can be discarded after inference or retained optionally with one-click deletion.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm border border-light h-100 text-center">
+                    <div class="text-primary mb-3"><i class="fas fa-scale-balanced fa-2x" style="color: #7b2cbf;"></i></div>
+                    <h6 class="fw-bold">Objective & Neutral</h6>
+                    <p class="small text-muted mb-0">Delivers helpful styling suggestions without judgmental beauty ratings.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm border border-light h-100 text-center">
+                    <div class="text-primary mb-3"><i class="fas fa-mobile-screen fa-2x" style="color: #2a0845;"></i></div>
+                    <h6 class="fw-bold">Camera Ready</h6>
+                    <p class="small text-muted mb-0">Seamless mobile camera capture and desktop webcam integration.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA Card -->
+        <div class="mt-5 p-5 rounded-4 text-center text-white gradient-primary shadow-lg position-relative overflow-hidden">
+            <div class="position-relative" style="z-index: 2;">
+                <h2 class="display-6 fw-bold mb-3">Ready to Discover Your Best Hairstyle?</h2>
+                <p class="text-white-50 mx-auto mb-4" style="max-width: 580px;">
+                    Take the guesswork out of your next salon or barber visit. Get an accurate, geometry-backed face shape report in seconds.
+                </p>
+                <a href="{% url 'analyze' %}" class="btn btn-primary-purple btn-lg px-4 shadow">
+                    <i class="fas fa-sparkles me-2"></i> Start Face Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

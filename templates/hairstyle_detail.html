@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ hairstyle.name }} – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'hairstyles' %}" class="text-decoration-none">Hairstyles</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ hairstyle.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Main Detail Row -->
+    <div class="row g-5">
+        <!-- Hairstyle Image Column -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                {% if hairstyle.image %}
+                    <img src="{{ hairstyle.image.url }}" alt="{{ hairstyle.name }}" class="img-fluid w-100" style="max-height: 480px; object-fit: cover;">
+                {% else %}
+                    <div class="p-5 text-center bg-light text-muted" style="min-height: 380px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-scissors fa-4x opacity-50"></i>
+                    </div>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                    <button class="fav-btn-badge btn-fav-toggle {% if is_favourite %}active{% endif %}" data-hairstyle-id="{{ hairstyle.id }}" title="Save to Favourites" style="top: 20px; right: 20px;">
+                        <i class="{% if is_favourite %}fas fa-heart text-danger{% else %}far fa-heart{% endif %}"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Hairstyle Details Column -->
+        <div class="col-lg-7">
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="badge bg-light text-dark border">{{ hairstyle.get_gender_display }}</span>
+                <span class="badge bg-purple-soft text-purple">{{ hairstyle.hair_length }} Length</span>
+                <span class="badge bg-purple-soft text-purple">{{ hairstyle.hair_type }} Texture</span>
+                <span class="badge bg-purple-soft text-purple">{{ hairstyle.category }}</span>
+            </div>
+
+            <h1 class="display-6 fw-bold mb-3">{{ hairstyle.name }}</h1>
+            <p class="lead text-muted mb-4">{{ hairstyle.description }}</p>
+
+            <!-- Compatible Face Shapes -->
+            <div class="card border-0 bg-light rounded-4 p-4 mb-4">
+                <h6 class="fw-bold mb-2 text-dark"><i class="fas fa-gem text-accent-neon-violet me-2"></i> Flattering on Face Shapes:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for shape in hairstyle.get_compatible_face_shapes %}
+                        <a href="{% url 'hairstyles' %}?face_shape={{ shape }}" class="badge rounded-pill px-3 py-2 text-decoration-none" style="background: #e0aaff; color: #230843; font-size: 0.85rem;">
+                            {{ shape }} Face
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Professional Styling & Maintenance Tips -->
+            <div class="card border-0 bg-white shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-wand-magic-sparkles text-warning me-2"></i> Styling & Maintenance Advice</h5>
+                <p class="small text-muted mb-0" style="white-space: pre-line;">{{ hairstyle.styling_tips|default:"To achieve this look, use a lightweight texturizing spray on damp hair and style with a round brush or diffuse with low heat. Regular trims every 6-8 weeks help maintain the silhouette." }}</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{% url 'analyze' %}" class="btn btn-primary-purple rounded-pill px-4">
+                    <i class="fas fa-camera me-2"></i> Check If This Fits My Face
+                </a>
+                <a href="{% url 'hairstyles' %}" class="btn btn-outline-purple rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Catalog
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Hairstyles Row -->
+    {% if similar_styles %}
+        <div class="mt-5 pt-5 border-top">
+            <h4 class="fw-bold mb-4">Similar {{ hairstyle.hair_length }} Hairstyles</h4>
+            <div class="row g-4">
+                {% for style in similar_styles %}
+                    <div class="col-lg-3 col-md-6">
+                        {% include 'includes/hairstyle_card.html' with style=style fav_ids=fav_ids %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

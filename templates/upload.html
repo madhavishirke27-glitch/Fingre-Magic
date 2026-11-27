@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Face Analysis – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <!-- Header Section -->
+            <div class="text-center mb-4">
+                <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #e0aaff; color: #230843;">AI Facial Analysis</span>
+                <h2 class="display-6 fw-bold mt-2">Analyze Your Face Shape</h2>
+                <p class="text-muted mx-auto" style="max-width: 620px;">
+                    Upload a photograph or capture a live webcam portrait. Our MediaPipe model will extract 468 landmark coordinates and determine your geometric face shape.
+                </p>
+            </div>
+
+            <!-- Main Analysis Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                <!-- Navigation Tabs: Upload File vs Capture Camera -->
+                <div class="p-3 bg-light border-bottom">
+                    <ul class="nav nav-pills nav-fill gap-2" id="inputMethodTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill fw-semibold py-2" id="tab-upload-file" data-bs-toggle="pill" data-bs-target="#panel-upload-file" type="button" role="tab" aria-selected="true">
+                                <i class="fas fa-cloud-arrow-up me-2"></i> Upload Photo From Device
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill fw-semibold py-2" id="tab-webcam-capture" data-bs-toggle="pill" data-bs-target="#panel-webcam-capture" type="button" role="tab" aria-selected="false">
+                                <i class="fas fa-camera me-2"></i> Capture With Webcam
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Form submitting to analyze_face_view -->
+                    <form method="post" action="{% url 'analyze' %}" enctype="multipart/form-data" id="analysis-form">
+                        {% csrf_token %}
+                        
+                        <!-- Hidden inputs for file & webcam base64 -->
+                        {{ form.image_file }}
+                        {{ form.webcam_image_data }}
+
+                        <div class="tab-content" id="inputMethodContent">
+                            <!-- TAB 1: FILE UPLOAD -->
+                            <div class="tab-pane fade show active" id="panel-upload-file" role="tabpanel">
+                                <!-- Drag & Drop Zone -->
+                                <div class="upload-dropzone position-relative" id="upload-dropzone">
+                                    <div class="scanner-overlay"></div>
+                                    <div class="feature-icon-wrapper mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2rem;">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Click to browse or drag & drop photo here</h5>
+                                    <p class="text-muted small mb-3">Accepts high-resolution JPG, JPEG, or PNG (Max 10 MB)</p>
+                                    <button type="button" class="btn btn-outline-purple btn-sm rounded-pill px-4">
+                                        <i class="fas fa-folder-open me-2"></i> Choose Photo
+                                    </button>
+                                </div>
+
+                                <!-- File Preview Container (Hidden initially) -->
+                                <div class="d-none text-center" id="file-preview-container">
+                                    <div class="position-relative d-inline-block rounded-4 overflow-hidden shadow-sm border mb-3" style="max-width: 320px;">
+                                        <div class="scanner-overlay"></div>
+                                        <img src="" alt="Selected Preview" id="file-preview-img" class="img-fluid" style="max-height: 380px; object-fit: cover;">
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="btn-remove-file">
+                                            <i class="fas fa-trash-can me-1"></i> Remove & Choose Another
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAB 2: LIVE WEBCAM CAPTURE -->
+                            <div class="tab-pane fade text-center" id="panel-webcam-capture" role="tabpanel">
+                                <div class="webcam-container mb-3 position-relative">
+                                    <div class="scanner-overlay"></div>
+                                    <video id="webcam-video" autoplay playsinline muted></video>
+                                    <canvas id="webcam-canvas" class="d-none"></canvas>
+                                </div>
+
+                                <div id="camera-status" class="small mb-3 text-muted">
+                                    Camera is idle. Click "Start Camera" below to grant browser permission.
+                                </div>
+
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-primary-purple rounded-pill px-4" id="btn-start-camera">
+                                        <i class="fas fa-video me-2"></i> Start Camera
+                                    </button>
+                                    <button type="button" class="btn btn-primary-purple rounded-pill px-4 d-none" id="btn-snap-photo">
+                                        <i class="fas fa-camera me-2"></i> Take Snapshot
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 d-none" id="btn-retake-photo">
+                                        <i class="fas fa-arrows-rotate me-2"></i> Retake Snapshot
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guidelines & Privacy Option -->
+                        <div class="mt-4 pt-4 border-top">
+                            <div class="p-3 rounded-4 bg-light mb-3">
+                                <h6 class="fw-bold mb-2 small text-dark"><i class="fas fa-lightbulb text-warning me-2"></i> Tips for Accurate Face Detection:</h6>
+                                <ul class="mb-0 small text-muted ps-3">
+                                    <li>Ensure even lighting without deep shadows across your jaw or forehead.</li>
+                                    <li>Face the camera directly (neutral front-facing pose).</li>
+                                    <li>Keep hair tucked behind ears or away from temples and forehead hairline.</li>
+                                    <li>The photo must contain <strong>exactly one face</strong>.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Privacy Toggle -->
+                            <div class="form-check mb-4">
+                                {{ form.retain_photo }}
+                                <label class="form-check-label small text-muted" for="id_retain_photo">
+                                    {{ form.retain_photo.label }}
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary-purple w-100 py-3 rounded-pill fw-bold fs-5 shadow" id="btn-analyze-submit">
+                                <i class="fas fa-wand-magic-sparkles me-2"></i> Analyze My Face
+                            </button>
+
+                            <!-- Animated Processing State Banner -->
+                            <div class="d-none mt-3 p-3 text-center bg-purple-soft rounded-3" id="loading-analysis-banner" style="background: #f7f0fe;">
+                                <div class="spinner-border text-primary-purple mb-2" role="status" style="width: 2rem; height: 2rem; color: #7b2cbf;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <h6 class="fw-bold text-primary-purple mb-1">Processing Facial Mesh...</h6>
+                                <p class="small text-muted mb-0">Detecting MediaPipe 3D coordinates, computing Euclidean ratios, and classifying shape archetype.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

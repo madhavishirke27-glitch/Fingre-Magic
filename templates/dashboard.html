@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Dashboard – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header Banner -->
+    <div class="gradient-primary text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 position-relative overflow-hidden">
+        <div class="row align-items-center position-relative" style="z-index: 2;">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-dark px-3 py-1 rounded-pill small fw-bold mb-2">Member Dashboard</span>
+                <h2 class="display-6 fw-bold mb-2">Hello, {{ user.first_name|default:user.username }}! 👋</h2>
+                <p class="text-white-50 mb-4" style="max-width: 580px;">
+                    Welcome to your personal style control center. Manage your facial analyses, view tailored hairstyle recommendations, and track saved cuts.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'analyze' %}" class="btn btn-primary-purple rounded-pill px-4">
+                        <i class="fas fa-camera-viewfinder me-2"></i> Analyze New Photo
+                    </a>
+                    <a href="{% url 'hairstyles' %}" class="btn btn-outline-purple rounded-pill px-4 text-white border-white">
+                        <i class="fas fa-scissors me-2"></i> Browse All Styles
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                {% if latest_analysis %}
+                    <div class="p-3 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-25 d-inline-block text-start">
+                        <span class="small text-white-50 d-block">Current Face Shape</span>
+                        <h4 class="fw-bold text-white mb-1">
+                            <i class="fas fa-sparkles text-warning me-1"></i> {{ latest_analysis.detected_face_shape }} Face
+                        </h4>
+                        <span class="badge bg-success bg-opacity-75 text-white small">
+                            {{ latest_analysis.confidence }}% Confidence
+                        </span>
+                        <div class="mt-2">
+                            <a href="{% url 'result' latest_analysis.id %}" class="btn btn-sm btn-light rounded-pill px-3">
+                                View Full Report <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="p-3 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-25 d-inline-block text-start">
+                        <span class="small text-white-50 d-block">Status</span>
+                        <h5 class="fw-bold text-white mb-1">No Analysis Yet</h5>
+                        <p class="small text-white-50 mb-2">Upload your first photo to discover your face shape!</p>
+                        <a href="{% url 'analyze' %}" class="btn btn-sm btn-light rounded-pill px-3">
+                            <i class="fas fa-plus me-1"></i> Analyze Now
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Metrics Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="feature-icon-wrapper mb-0" style="width: 52px; height: 52px; font-size: 1.4rem;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small d-block">Total Analyses</span>
+                        <h4 class="fw-bold mb-0">{{ total_analyses }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="feature-icon-wrapper mb-0" style="width: 52px; height: 52px; font-size: 1.4rem; background: rgba(255, 117, 151, 0.15); color: #ff7597;">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small d-block">Saved Favourites</span>
+                        <h4 class="fw-bold mb-0">{{ fav_count }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="feature-icon-wrapper mb-0" style="width: 52px; height: 52px; font-size: 1.4rem; background: rgba(199, 125, 255, 0.15); color: #c77dff;">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small d-block">Hair Preferences</span>
+                        <h6 class="fw-bold mb-0">{{ user.profile.preferred_hair_length }} Length &bull; {{ user.profile.preferred_hair_type }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Hairstyles Based on Latest Face Shape -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-0">Recommended for Your {{ active_shape }} Face</h4>
+                <p class="text-muted small mb-0">Personalized styling suggestions crafted for your proportions.</p>
+            </div>
+            <a href="{% url 'hairstyles' %}?face_shape={{ active_shape }}" class="btn btn-sm btn-outline-purple rounded-pill px-3">
+                See All {{ active_shape }} Styles <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for style in recommended_hairstyles %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="hairstyle-card">
+                        <div class="hairstyle-img-wrapper">
+                            {% if style.image %}
+                                <img src="{{ style.image.url }}" alt="{{ style.name }}" class="hairstyle-img">
+                            {% else %}
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                    <i class="fas fa-scissors fa-3x opacity-50"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <button class="fav-btn-badge btn-fav-toggle {% if style.id in fav_ids %}active{% endif %}" data-hairstyle-id="{{ style.id }}" title="Save to Favourites">
+                                <i class="{% if style.id in fav_ids %}fas fa-heart text-danger{% else %}far fa-heart{% endif %}"></i>
+                            </button>
+                        </div>
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-light text-dark border">{{ style.get_gender_display }}</span>
+                                <span class="badge bg-purple-soft text-purple">{{ style.hair_length }}</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ style.name }}</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">{{ style.description|truncatewords:12 }}</p>
+                            <a href="{% url 'hairstyle_detail' style.id %}" class="btn btn-sm btn-outline-purple rounded-pill w-100">
+                                View Details & Styling Tips
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-4 bg-white rounded-4 border">
+                    <p class="text-muted mb-0">No matching hairstyles found for {{ active_shape }}. Explore all styles in the catalog!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Analyses Section -->
+    <div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-0">Recent Analysis History</h4>
+                <p class="text-muted small mb-0">Chronological list of your previous face tests.</p>
+            </div>
+            <a href="{% url 'history' %}" class="btn btn-sm btn-outline-purple rounded-pill px-3">
+                Full History <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Date & Time</th>
+                            <th>Detected Shape</th>
+                            <th>Estimation Confidence</th>
+                            <th>Length/Width Ratio</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in recent_analyses %}
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-semibold">{{ item.analysis_date|date:"M d, Y" }}</span>
+                                    <span class="text-muted small d-block">{{ item.analysis_date|time:"H:i" }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-2" style="background: #e0aaff; color: #230843;">
+                                        {{ item.detected_face_shape }} Face
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 80px;">
+                                            <div class="progress-bar bg-success" style="width: {{ item.confidence }}%;"></div>
+                                        </div>
+                                        <span class="small fw-semibold">{{ item.confidence }}%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ item.length_width_ratio }}</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="{% url 'result' item.id %}" class="btn btn-sm btn-outline-purple rounded-pill px-3">
+                                        View Result
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    <i class="fas fa-camera fa-2x mb-2 d-block opacity-50"></i>
+                                    No facial analyses recorded yet. <a href="{% url 'analyze' %}" class="text-decoration-none fw-bold">Upload your first photo!</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

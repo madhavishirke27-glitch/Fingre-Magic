@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analysis Result: {{ face_shape }} Face – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Result Header Banner -->
+    <div class="gradient-primary text-white p-4 p-md-5 rounded-4 shadow-sm mb-5 position-relative overflow-hidden">
+        <div class="row align-items-center position-relative" style="z-index: 2;">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-dark px-3 py-1 rounded-pill small fw-bold mb-2">
+                    <i class="fas fa-check-circle text-success me-1"></i> Analysis Verified
+                </span>
+                <h1 class="display-5 fw-bold mb-2">Your Face Shape: <span class="gradient-text">{{ face_shape }}</span></h1>
+                <p class="text-white-50 lead mb-3">
+                    {{ shape_details.summary }}
+                </p>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="shape-hero-badge">
+                        <i class="fas fa-gauge-high text-warning"></i>
+                        <span>Estimation Confidence: <strong>{{ analysis.confidence }}%</strong></span>
+                    </div>
+                    <div class="shape-hero-badge">
+                        <i class="fas fa-ruler-vertical text-info"></i>
+                        <span>Length/Width: <strong>{{ analysis.length_width_ratio }}</strong></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <a href="#recommended-hairstyles-section" class="btn btn-primary-purple rounded-pill px-4 shadow">
+                    <i class="fas fa-scissors me-2"></i> Jump to Hairstyles
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis & Landmark Visualization Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Column 1: Facial Photo & Landmark Overlay -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Facial Architecture</h5>
+                    {% if analysis.annotated_image and analysis.original_image %}
+                        <button class="btn btn-sm btn-outline-purple rounded-pill px-3" id="btn-toggle-landmarks">
+                            <i class="fas fa-chart-network me-1"></i> View AI Landmarks
+                        </button>
+                    {% endif %}
+                </div>
+
+                <div class="rounded-4 overflow-hidden bg-dark position-relative text-center mb-3" style="min-height: 340px; display: flex; align-items: center; justify-content: center;">
+                    {% if analysis.annotated_image %}
+                        <img src="{{ analysis.annotated_image.url }}" alt="AI Annotated Landmarks" class="img-fluid rounded-4" id="img-annotated-photo" style="max-height: 420px; object-fit: contain;">
+                    {% elif analysis.original_image %}
+                        <img src="{{ analysis.original_image.url }}" alt="Analyzed Photo" class="img-fluid rounded-4" id="img-original-photo" style="max-height: 420px; object-fit: contain;">
+                    {% else %}
+                        <div class="p-4 text-white-50">
+                            <i class="fas fa-user-shield fa-4x mb-3 text-secondary"></i>
+                            <h6 class="text-white">Photo Discarded by Privacy Preference</h6>
+                            <p class="small mb-0">You opted not to save the original photo. Facial landmarks and geometry ratios were computed securely in memory.</p>
+                        </div>
+                    {% endif %}
+
+                    {% if analysis.original_image and analysis.annotated_image %}
+                        <img src="{{ analysis.original_image.url }}" alt="Original Photo" class="img-fluid rounded-4 d-none" id="img-original-photo" style="max-height: 420px; object-fit: contain;">
+                    {% endif %}
+                </div>
+
+                <div class="small text-muted text-center">
+                    <i class="fas fa-shield-check text-success me-1"></i> Landmark geometry calculated across 468 3D vertices using MediaPipe.
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Geometric Measurements & Key Proportions -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white p-4 h-100">
+                <h5 class="fw-bold mb-3">Anthropometric Proportions</h5>
+                
+                <!-- Measurements Table -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-sm table-borderless align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Facial Dimension</th>
+                                <th>Measurement</th>
+                                <th>Proportion Ratio</th>
+                                <th>Structural Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-semibold">Face Length (L)</td>
+                                <td>{{ measurements.face_length|default:"-" }} px</td>
+                                <td><span class="badge bg-light text-dark border">Ratio: {{ measurements.length_to_width_ratio }}</span></td>
+                                <td class="small text-muted">Forehead hairline to chin tip</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Cheekbone Width (C)</td>
+                                <td>{{ measurements.cheekbone_width|default:"-" }} px</td>
+                                <td><span class="badge bg-light text-dark border">C/J: {{ measurements.cheek_to_jaw_ratio }}</span></td>
+                                <td class="small text-muted">Widest distance across zygomatic arches</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Forehead Width (F)</td>
+                                <td>{{ measurements.forehead_width|default:"-" }} px</td>
+                                <td><span class="badge bg-light text-dark border">F/J: {{ measurements.forehead_to_jaw_ratio }}</span></td>
+                                <td class="small text-muted">Temple to temple distance</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Jawline Width (J)</td>
+                                <td>{{ measurements.jaw_width|default:"-" }} px</td>
+                                <td><span class="badge bg-light text-dark border">F/C: {{ measurements.forehead_to_cheek_ratio }}</span></td>
+                                <td class="small text-muted">Gonion to gonion jaw angle</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Proportion Observations -->
+                <h6 class="fw-bold mb-2">AI Geometric Observations:</h6>
+                <div class="p-3 bg-light rounded-4 mb-4">
+                    <ul class="mb-0 ps-3 small text-muted">
+                        {% for obs in observations %}
+                            <li class="mb-1">{{ obs }}</li>
+                        {% empty %}
+                            <li>Harmonious facial proportion alignment detected across all coordinates.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Styling Advice & Goal -->
+                <div class="p-3 rounded-4 border" style="background: #faf7ff; border-color: #e0aaff !important;">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-primary-purple fw-bold">
+                        <i class="fas fa-wand-magic-sparkles" style="color: #9d4edd;"></i>
+                        <span>Cosmetology Styling Strategy</span>
+                    </div>
+                    <p class="small text-muted mb-2">
+                        <strong>Styling Goal:</strong> {{ styling_principles.goal }}
+                    </p>
+                    <div class="row g-2 small">
+                        <div class="col-md-6">
+                            <span class="fw-semibold text-success d-block mb-1"><i class="fas fa-check me-1"></i> Flattering Elements:</span>
+                            <ul class="ps-3 mb-0 text-muted">
+                                {% for item in styling_principles.recommended_features %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="fw-semibold text-danger d-block mb-1"><i class="fas fa-xmark me-1"></i> Elements to Avoid:</span>
+                            <ul class="ps-3 mb-0 text-muted">
+                                {% for item in styling_principles.avoid_features %}
+                                    <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         RECOMMENDED HAIRSTYLES SECTION
+         ========================================== -->
+    <div id="recommended-hairstyles-section" class="pt-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #e0aaff; color: #230843;">Personalized For You</span>
+                <h2 class="display-6 fw-bold mt-2">Recommended Hairstyles for {{ face_shape }} Face</h2>
+                <p class="text-muted">Explore cuts curated specifically to balance and complement your facial geometry.</p>
+            </div>
+            <div>
+                <a href="{% url 'hairstyles' %}?face_shape={{ face_shape }}" class="btn btn-outline-purple rounded-pill px-4">
+                    Filter & Browse All <i class="fas fa-sliders ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Length Filter Pills -->
+        <ul class="nav nav-pills mb-4 gap-2" id="styleLengthTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill px-4" id="all-styles-tab" data-bs-toggle="pill" data-bs-target="#tab-all-styles" type="button" role="tab">
+                    All Compatible ({{ matched_hairstyles.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-4" id="short-styles-tab" data-bs-toggle="pill" data-bs-target="#tab-short-styles" type="button" role="tab">
+                    Short Cuts ({{ short_styles.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-4" id="medium-styles-tab" data-bs-toggle="pill" data-bs-target="#tab-medium-styles" type="button" role="tab">
+                    Medium Length ({{ medium_styles.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill px-4" id="long-styles-tab" data-bs-toggle="pill" data-bs-target="#tab-long-styles" type="button" role="tab">
+                    Long Styles ({{ long_styles.count }})
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="styleLengthTabsContent">
+            <!-- ALL STYLES -->
+            <div class="tab-pane fade show active" id="tab-all-styles" role="tabpanel">
+                <div class="row g-4">
+                    {% for style in matched_hairstyles %}
+                        <div class="col-lg-4 col-md-6">
+                            {% include 'includes/hairstyle_card.html' with style=style fav_ids=fav_ids %}
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                            <p class="text-muted">No specific hairstyles found. Check back as styles are updated!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SHORT STYLES -->
+            <div class="tab-pane fade" id="tab-short-styles" role="tabpanel">
+                <div class="row g-4">
+                    {% for style in short_styles %}
+                        <div class="col-lg-4 col-md-6">
+                            {% include 'includes/hairstyle_card.html' with style=style fav_ids=fav_ids %}
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                            <p class="text-muted">No short styles cataloged yet for this face shape.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- MEDIUM STYLES -->
+            <div class="tab-pane fade" id="tab-medium-styles" role="tabpanel">
+                <div class="row g-4">
+                    {% for style in medium_styles %}
+                        <div class="col-lg-4 col-md-6">
+                            {% include 'includes/hairstyle_card.html' with style=style fav_ids=fav_ids %}
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                            <p class="text-muted">No medium styles cataloged yet for this face shape.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- LONG STYLES -->
+            <div class="tab-pane fade" id="tab-long-styles" role="tabpanel">
+                <div class="row g-4">
+                    {% for style in long_styles %}
+                        <div class="col-lg-4 col-md-6">
+                            {% include 'includes/hairstyle_card.html' with style=style fav_ids=fav_ids %}
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                            <p class="text-muted">No long styles cataloged yet for this face shape.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

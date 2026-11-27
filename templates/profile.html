@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="gradient-primary p-4 text-white">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="brand-icon" style="width: 55px; height: 55px; font-size: 1.5rem;">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">{{ user.get_full_name|default:user.username }}</h3>
+                            <span class="text-white-50 small">Member since {{ user.date_joined|date:"F Y" }} &bull; @{{ user.username }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        
+                        <h5 class="fw-bold mb-3">Account Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3">Hairstyle Preferences</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold">Preferred Hair Length</label>
+                                {{ form.preferred_hair_length }}
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold">Preferred Texture</label>
+                                {{ form.preferred_hair_type }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Personal Hair Goals / Bio</label>
+                                {{ form.bio }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-purple rounded-pill px-5 py-2 fw-bold">
+                            <i class="fas fa-check me-2"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

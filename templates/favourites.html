@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Favourite Hairstyles – FaceStyle AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #ffd6e0; color: #ff3366;">Saved Collection</span>
+            <h2 class="display-6 fw-bold mt-2">My Favourite Hairstyles</h2>
+            <p class="text-muted mb-0">Your personally bookmarked hairstyles for future salon appointments and styling inspiration.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <span class="badge bg-purple-soft text-purple fs-6 px-3 py-2 rounded-pill">
+                {{ total_saved }} Saved Styles
+            </span>
+        </div>
+    </div>
+
+    {% if favourites %}
+        <div class="row g-4">
+            {% for fav in favourites %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="hairstyle-card">
+                        <div class="hairstyle-img-wrapper">
+                            {% if fav.hairstyle.image %}
+                                <img src="{{ fav.hairstyle.image.url }}" alt="{{ fav.hairstyle.name }}" class="hairstyle-img">
+                            {% else %}
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                    <i class="fas fa-scissors fa-3x opacity-50"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <a href="{% url 'toggle_favourite' fav.hairstyle.id %}" class="fav-btn-badge active" title="Remove from Favourites">
+                                <i class="fas fa-heart text-danger"></i>
+                            </a>
+                        </div>
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-light text-dark border">{{ fav.hairstyle.get_gender_display }}</span>
+                                <span class="badge bg-purple-soft text-purple">{{ fav.hairstyle.hair_length }} &bull; {{ fav.hairstyle.hair_type }}</span>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ fav.hairstyle.name }}</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">{{ fav.hairstyle.description|truncatewords:14 }}</p>
+                            
+                            <div class="small text-muted mb-3">
+                                <i class="fas fa-calendar-alt me-1"></i> Saved on {{ fav.date_added|date:"M d, Y" }}
+                            </div>
+
+                            <div class="d-flex gap-2 mt-auto">
+                                <a href="{% url 'hairstyle_detail' fav.hairstyle.id %}" class="btn btn-sm btn-outline-purple rounded-pill w-100">
+                                    View Styling Tips
+                                </a>
+                                <a href="{% url 'toggle_favourite' fav.hairstyle.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Remove">
+                                    <i class="fas fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="mb-3 text-danger opacity-75">
+                <i class="far fa-heart fa-4x"></i>
+            </div>
+            <h4 class="fw-bold mb-2">No Favourites Saved Yet</h4>
+            <p class="text-muted mx-auto mb-4" style="max-width: 480px;">
+                You haven't bookmarked any hairstyles yet. Browse our catalog or analyze your face to discover styles you love!
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'hairstyles' %}" class="btn btn-primary-purple rounded-pill px-4">
+                    <i class="fas fa-compass me-2"></i> Browse Hairstyle Catalog
+                </a>
+                <a href="{% url 'analyze' %}" class="btn btn-outline-purple rounded-pill px-4">
+                    <i class="fas fa-camera me-2"></i> Analyze Face Shape
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

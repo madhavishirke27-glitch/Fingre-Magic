@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About FaceStyle AI – Final Year IT College Project{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <span class="badge px-3 py-2 rounded-pill fw-bold text-uppercase" style="background: #e0aaff; color: #230843;">College Viva Documentation</span>
+        <h1 class="display-5 fw-bold mt-2">About FaceStyle AI</h1>
+        <p class="text-muted mx-auto" style="max-width: 680px;">
+            An innovation-driven, AI-based face shape estimation and personalized hairstyle recommendation platform developed as a Final Year (TY B.Sc. IT) project.
+        </p>
+    </div>
+
+    <!-- Core Project Objective & Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="feature-icon-wrapper mb-3">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h4 class="fw-bold mb-3">1. Project Objective</h4>
+                <p class="text-muted small">
+                    Choosing an appropriate hairstyle is traditionally based on intuition or salon trial-and-error. 
+                    <strong>FaceStyle AI</strong> transforms this process by combining computer vision with cosmetological anthropometry.
+                </p>
+                <p class="text-muted small mb-0">
+                    The platform enables users to capture or upload portrait photographs, extracts 468 landmark coordinates using Google MediaPipe, calculates mathematical proportion ratios, classifies the face into one of six standard geometric categories, and recommends flattering hairstyles tailored to that geometry.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="feature-icon-wrapper mb-3" style="background: rgba(255, 117, 151, 0.15); color: #ff7597;">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <h4 class="fw-bold mb-3">2. Technology Stack Architecture</h4>
+                <ul class="list-unstyled small text-muted mb-0">
+                    <li class="mb-2"><strong>Backend Framework:</strong> Python 3.12 & Django Framework (MVT Architecture).</li>
+                    <li class="mb-2"><strong>AI / Computer Vision:</strong> Google MediaPipe Face Landmarker (468 3D vertices) & OpenCV.</li>
+                    <li class="mb-2"><strong>Mathematical Analysis:</strong> NumPy Euclidean distance calculations & ratio heuristics.</li>
+                    <li class="mb-2"><strong>Frontend Presentation:</strong> HTML5, CSS3, JavaScript ES6, Bootstrap 5, Font Awesome.</li>
+                    <li class="mb-0"><strong>Database:</strong> SQLite3 (development) with strict MySQL schema compatibility.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- The 4-Step AI Face Shape Detection Pipeline -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-5">
+        <h3 class="fw-bold mb-4 text-center">Face Shape Estimation Pipeline</h3>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded-4 h-100">
+                    <span class="badge bg-purple-soft text-purple mb-2">Stage 1</span>
+                    <h6 class="fw-bold">Acquisition & Preprocessing</h6>
+                    <p class="small text-muted mb-0">
+                        Image acquired via HTML5 video stream snapshot or file upload. Validated for single face presence, resolution, and converted to RGB tensors.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded-4 h-100">
+                    <span class="badge bg-purple-soft text-purple mb-2">Stage 2</span>
+                    <h6 class="fw-bold">468-Mesh Landmarks</h6>
+                    <p class="small text-muted mb-0">
+                        MediaPipe Face Landmarker identifies 3D vertices including Trichion (10), Gnathion (152), Zygomatic arches (234, 454), and Gonion angles (58, 288).
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded-4 h-100">
+                    <span class="badge bg-purple-soft text-purple mb-2">Stage 3</span>
+                    <h6 class="fw-bold">Geometric Proportions</h6>
+                    <p class="small text-muted mb-0">
+                        Calculates Face Length ($L$), Cheekbone Width ($W_c$), Forehead Width ($W_f$), Jawline Width ($W_j$), and relative dimension ratios.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded-4 h-100">
+                    <span class="badge bg-purple-soft text-purple mb-2">Stage 4</span>
+                    <h6 class="fw-bold">Multi-Criteria Classification</h6>
+                    <p class="small text-muted mb-0">
+                        Evaluates ratio matrices against calibrated thresholds to estimate Oval, Round, Square, Heart, Diamond, or Oblong archetype with confidence score.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mathematical Formulas Used in Project Viva -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-5">
+        <h3 class="fw-bold mb-3">Mathematical Formulations</h3>
+        <p class="text-muted small mb-4">
+            During your college viva examination, explain these four primary geometric metrics calculated by <a href="#" class="text-decoration-none">ai_engine/measurements.py</a>:
+        </p>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="p-3 border rounded-3 h-100">
+                    <h6 class="fw-bold text-primary-purple">1. Face Length-to-Width Ratio ($R_{LW}$)</h6>
+                    <p class="small text-muted mb-2">Ratio of vertical facial height to maximum cheekbone width:</p>
+                    <div class="bg-light p-2 rounded text-center font-monospace mb-2">
+                        R_LW = Face_Length / Cheekbone_Width
+                    </div>
+                    <span class="small text-muted d-block">&bull; Oblong: $R_{LW} > 1.48$</span>
+                    <span class="small text-muted d-block">&bull; Oval: $1.30 \le R_{LW} \le 1.48$</span>
+                    <span class="small text-muted d-block">&bull; Round/Square: $R_{LW} < 1.30$</span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 border rounded-3 h-100">
+                    <h6 class="fw-bold text-primary-purple">2. Forehead-to-Jawline Ratio ($R_{FJ}$)</h6>
+                    <p class="small text-muted mb-2">Calculates taper from temples down to jaw angles:</p>
+                    <div class="bg-light p-2 rounded text-center font-monospace mb-2">
+                        R_FJ = Forehead_Width / Jaw_Width
+                    </div>
+                    <span class="small text-muted d-block">&bull; Heart: $R_{FJ} > 1.25$ (distinct forehead prominence)</span>
+                    <span class="small text-muted d-block">&bull; Square: $0.90 \le R_{FJ} \le 1.10$ (uniform box symmetry)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Limitations & Ethical Stance -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-light border-0">
+        <h5 class="fw-bold mb-2"><i class="fas fa-shield-halved text-success me-2"></i> System Limitations & Ethical Responsibility</h5>
+        <p class="small text-muted mb-2">
+            <strong>1. Geometry Heuristic Limitation:</strong> Human facial anatomy exists on a continuous spectrum; classification into discrete categories is an aesthetic styling guideline rather than a medical or genetic diagnosis.
+        </p>
+        <p class="small text-muted mb-2">
+            <strong>2. Neutral Styling Guidance:</strong> FaceStyle AI does not make subjective beauty judgements or attractiveness scores. All styling recommendations focus purely on visual balance and personal confidence.
+        </p>
+        <p class="small text-muted mb-0">
+            <strong>3. Privacy-First Architecture:</strong> Images uploaded by users are processed in memory and are never stored on external third-party cloud servers. Retaining photos in personal history is completely optional and can be deleted with a single click.
+        </p>
+    </div>
+</div>
+{% endblock %}
