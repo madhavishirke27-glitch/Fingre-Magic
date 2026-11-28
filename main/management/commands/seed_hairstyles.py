@@ -379,20 +379,21 @@ class Command(BaseCommand):
 
             # Generate graphic
             
-# Use uploaded real hairstyle photos
-media_dir = os.path.join(settings.MEDIA_ROOT, 'hairstyles')
-image_path = os.path.join(media_dir, filename)
+            # Use uploaded real hairstyle photos
+            media_dir = os.path.join(settings.MEDIA_ROOT, 'hairstyles')
+            image_path = os.path.join(media_dir, filename)
 
-if os.path.isfile(image_path):
-    image_rel_path = f"hairstyles/{filename}"
-else:
-    image_rel_path = generate_hairstyle_placeholder(
-        name=item['name'],
-        gender=item['gender'],
-        length=item['hair_length'],
-        face_shapes=face_shapes_list,
-        filename=filename
-    )
+            if os.path.isfile(image_path):
+                image_rel_path = f"hairstyles/{filename}"
+            else:
+                image_rel_path = generate_hairstyle_placeholder(
+                    name=item['name'],
+                    gender=item['gender'],
+                    length=item['hair_length'],
+                    face_shapes=face_shapes_list,
+                    filename=filename
+                )
+
 
 
             hairstyle, created = Hairstyle.objects.update_or_create(
